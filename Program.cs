@@ -50,23 +50,118 @@ namespace calculator
                         Console.WriteLine("Введите количество множеств: ");
                         numMn = Convert.ToInt32(Console.ReadLine());
                         mnog = new int[numMn][];
+                        //цикл перебора всех множеств
                         for (int i = 0; i < numMn; i++)
                         {
-                            Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
-                            int sizeMn = Convert.ToInt32(Console.ReadLine());
-                            mnog[i] = new int[sizeMn];
-                            Console.WriteLine(" \nВведите элементы множества\n ");
-                            for (int j = 0; j < sizeMn; j++)
+                            //выбор способа задания множества
+                            Console.WriteLine("\nВведите каким способом задаем множество (1.условием/2.перечислением): ");
+                            string method = Console.ReadLine();
+                            //задание мноежства перечислением
+                            if (method == "перечислением" || method == "2")
                             {
-                                Console.WriteLine("Введите " + (j + 1) + " элемент: ");
-                                int number = Convert.ToInt32(Console.ReadLine());
-                                //проверка на вхождение в диапазон
-                                while (number < left || number > right)
+                                Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
+                                int sizeMn = Convert.ToInt32(Console.ReadLine());
+                                mnog[i] = new int[sizeMn];
+                                Console.WriteLine(" \nВведите элементы множества\n ");
+                                for (int j = 0; j < sizeMn; j++)
                                 {
-                                    Console.WriteLine("Число не входит в диапазон - " + "[" + left + ";" + right + "]" + ". Введите ещё раз: ");
-                                    number = Convert.ToInt32(Console.ReadLine());
+                                    Console.WriteLine("Введите " + (j + 1) + " элемент: ");
+                                    int number = Convert.ToInt32(Console.ReadLine());
+                                    //проверка на вхождение в диапазон
+                                    while (number < left || number > right)
+                                    {
+                                        Console.WriteLine("Число не входит в диапазон - " + "[" + left + ";" + right + "]" + ". Введите ещё раз: ");
+                                        number = Convert.ToInt32(Console.ReadLine());
+                                    }
+                                    mnog[i][j] = number;
                                 }
-                                mnog[i][j] = number;
+                            }
+                            //задание множества условием
+                            if (method == "условием" || method == "1")
+                            {
+                                Console.WriteLine("\nВведите условие (1.четность/2.нечетность/3.кратность: ");
+                                string conditions = Console.ReadLine();
+                                //промежуточный список для занесения туда всех элементов из диапазона, удовлетворяющих условию
+                                List<int> listInd = new List<int>();
+                                //задание множества из четных элементов
+                                if (conditions == "1" || conditions == "четность")
+                                {
+                                    //поиск 1 элемента, удовлетворяющего условию
+                                    int elem = 0;
+                                    if (left % 2 == 0)
+                                        elem = left;
+                                    if (left % 2 != 0)
+                                        elem = left + 1;
+                                    int k = 0;
+                                    //добавление всех элементов в список
+                                    while (elem <= right)
+                                    {
+                                        listInd.Add(elem);
+                                        k++;
+                                        elem += 2;
+                                    }
+                                    //задание размера массива и перенос элементов туда из списка
+                                    mnog[i] = new int[listInd.Count];
+                                    for (int z = 0; z < listInd.Count; z++)
+                                        mnog[i][z] = listInd[z];
+                                    listInd.Clear();
+                                }
+                                //задание множества из нечетных элементов
+                                if (conditions == "2" || conditions == "нечетность")
+                                {
+                                    //поиск 1 элемента, удовлетворяющего условию
+                                    int elem = 0;
+                                    if (left % 2 == 0)
+                                        elem = left + 1;
+                                    if (left % 2 != 0)
+                                        elem = left;
+                                        int k = 0;
+                                    //добавление всех элементов в список
+                                    while (elem <= right)
+                                    {
+                                        listInd.Add(elem);
+                                        k++;
+                                        elem += 2;
+                                    }
+                                    //задание размера массива и перенос элементов туда из списка
+                                    mnog[i] = new int[listInd.Count];
+                                    for (int z = 0; z < listInd.Count; z++)
+                                        mnog[i][z] = listInd[z];
+                                    listInd.Clear();
+                                }
+                                //задание множества из элементов кратных определенному числу
+                                if (conditions == "3" || conditions == "кратность")
+                                {
+                                    Console.WriteLine("\nВведите какому числу кратны числа в множестве");
+                                    int numberMultiplicity = Convert.ToInt32(Console.ReadLine());
+                                    //поиск 1 элемента, удовлетворяющего условию
+                                    int elem = left;
+                                    while (elem % numberMultiplicity != 0 && elem <= right)
+                                        elem++;
+                                    int k = 0;
+                                    //добавление всех элементов в список
+                                    while (elem <= right)
+                                    {
+                                        listInd.Add(elem);
+                                        k++;
+                                        elem += numberMultiplicity;
+                                    }
+                                    //задание размера массива и перенос элементов туда из списка
+                                    mnog[i] = new int[listInd.Count];
+                                    for (int z = 0; z < listInd.Count; z++)
+                                        mnog[i][z] = listInd[z];
+                                    listInd.Clear();
+                                }
+                            }
+                        }
+                        //вывод множеств
+                        Console.WriteLine("Ваши множества: ");
+                        for (int i = 0; i < numMn; i++)
+                        {
+                            Console.WriteLine("\n" + (i + 1) + " множество: ");
+                            for (int j = 0; j < mnog[i].Length; j++)
+                            {
+                                Console.Write(mnog[i][j] + " ");
                             }
                         }
                         break;
