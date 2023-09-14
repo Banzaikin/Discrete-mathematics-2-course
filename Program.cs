@@ -54,9 +54,9 @@ namespace calculator
                         for (int i = 0; i < numMn; i++)
                         {
                             //выбор способа задания множества
-                            Console.WriteLine("\nВведите каким способом задаем множество (1.условием/2.перечислением): ");
+                            Console.WriteLine("\nВведите каким способом задаем множество (1.условием/2.перечислением/3.случайно): ");
                             string method = Console.ReadLine();
-                            //задание мноежства перечислением
+                            //задание множества перечислением
                             if (method == "перечислением" || method == "2")
                             {
                                 Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
@@ -115,7 +115,7 @@ namespace calculator
                                         elem = left + 1;
                                     if (left % 2 != 0)
                                         elem = left;
-                                        int k = 0;
+                                    int k = 0;
                                     //добавление всех элементов в список
                                     while (elem <= right)
                                     {
@@ -153,6 +153,20 @@ namespace calculator
                                     listInd.Clear();
                                 }
                             }
+                            //заполнение массива случайными числами
+                            if (method == "случайно" || method == "3")
+                            {
+                                Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
+                                int sizeMn = Convert.ToInt32(Console.ReadLine());
+                                mnog[i] = new int[sizeMn];
+                                Random rnd = new Random();
+                                byte[] bytes = new byte[100];
+                                for (int j = 0; j < sizeMn; j++)
+                                {
+                                    rnd.NextBytes(bytes);
+                                    mnog[i][j] = rnd.Next(left, right);
+                                }
+                            }
                         }
                         //вывод множеств
                         Console.WriteLine("Ваши множества: ");
@@ -168,24 +182,33 @@ namespace calculator
                     case 3: //Пересечение
                         List<int> list1 = new List<int>();
                         List<int> res3 = new List<int>();
-                        //создание листа для сравнения
-                        for (int k = 0; k < mnog[0].Length; k++)
-                        {
-                            list1.Add(mnog[0][k]); 
-                        }
                         //сначала сравниваются первые 2 множества и находятся совпадения в них, результат заносится в лист для сравнения
                         //далее 3 множество сравнивается с листом для сравнения и результаты заносятся в лист для сравнения и так далее
-                        for (int count = 1; count < numMn; count++)
+                        Console.Write("Сколько множеств хотите пересечь: ");
+                        int numIntersection = Convert.ToInt32(Console.ReadLine());
+                        List<int> listNumMn = new List<int>();
+                        for (int i = 0; i < numIntersection; i++)
+                        {
+                            Console.WriteLine("Введите номер " + (i + 1) + " множества: ");
+                            int num = Convert.ToInt32(Console.ReadLine());
+                            num--;
+                            listNumMn.Add(num);
+                        }
+                        //создание листа для сравнения
+                        for (int k = 0; k < mnog[listNumMn[0]].Length; k++)
+                        {
+                            list1.Add(mnog[listNumMn[0]][k]);
+                        }
+                        for (int count = 1; count < numIntersection; count++)
                         {
                             res3.Clear();
                             for (int i = 0; i < list1.Count; i++)
                             {
-                                for (int j = 0; j < mnog[count].Length; j++)
+                                for (int j = 0; j < mnog[listNumMn[count]].Length; j++)
                                 {
-                                    
-                                    if (list1[i] == mnog[count][j])
+                                    if (list1[i] == mnog[listNumMn[count]][j])
                                     {
-                                        res3.Add(mnog[count][j]);
+                                        res3.Add(mnog[listNumMn[count]][j]);
                                     }
                                 }
                             }
@@ -210,12 +233,22 @@ namespace calculator
                         break;
                     case 4: //Объединение
                         List<int> res4 = new List<int>();
-                        //добавление всех элементов в лист
-                        for(int i = 0; i < numMn; i++)
+                        Console.Write("Сколько множеств хотите объединить: ");
+                        int numIntersection2 = Convert.ToInt32(Console.ReadLine());
+                        List<int> listNumMn2 = new List<int>();
+                        for (int i = 0; i < numIntersection2; i++)
                         {
-                            for (int j = 0; j < mnog[i].Length; j++)
+                            Console.WriteLine("Введите номер " + (i + 1) + " множества: ");
+                            int num = Convert.ToInt32(Console.ReadLine());
+                            num--;
+                            listNumMn2.Add(num);
+                        }
+                        //добавление всех элементов в лист
+                        for (int i = 0; i < numIntersection2; i++)
+                        {
+                            for (int j = 0; j < mnog[listNumMn2[i]].Length; j++)
                             {
-                                res4.Add(mnog[i][j]);
+                                res4.Add(mnog[listNumMn2[i]][j]);
                             }
                         }
                         res4 = removeDuplicates(res4);
@@ -343,6 +376,9 @@ namespace calculator
                         break;
                     case 8: //Выход из программы
                         stop = true;
+                        break;
+                    default:
+                        Console.Write("Неправильно введена команда!");
                         break;
                 }
                 //Если была введена команда 8, то цикл прервется
