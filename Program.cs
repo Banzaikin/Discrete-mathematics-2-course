@@ -3,31 +3,308 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace calculator
 {
     class Program
     {
-        public static List<T> removeDuplicates<T>(List<T> list)
+        //функция для удаления повторяющихся элементов
+        public static List<T> RemoveDuplicates<T>(List<T> list)
         {
             return new HashSet<T>(list).ToList();
         }
+
+        //проверка на ввод числа
+        static int InputInt(string message)
+        {
+            int number;
+            Console.Write(message);
+            if (!int.TryParse(Console.ReadLine(), out number))
+            {
+                do
+                {
+                    Console.WriteLine("Ошибка!");
+                    Console.WriteLine("Введите целое число!");
+                    Console.Write(message);
+                } while (!int.TryParse(Console.ReadLine(), out number));
+            }
+            return number;
+        }
+
+        //пересечение множеств
+        public static List<int> IntersectSets(List<int> mnog1, List<int> mnog2)
+        {
+            List<int> res = new List<int>();
+            for (int i = 0; i < mnog1.Count; i++)
+            {
+                for (int j = 0; j < mnog2.Count; j++)
+                {
+                    if (mnog1[i] == mnog2[j])
+                        res.Add(mnog1[i]);
+                }
+            }
+            res = RemoveDuplicates(res);
+            return res;
+        }
+
+        //объединение множеств
+        public static List<int> MergeSets(List<int> mnog1, List<int> mnog2)
+        {
+            List<int> res = new List<int>();
+            for (int i = 0; i < mnog1.Count; i++)
+                res.Add(mnog1[i]);
+            for (int i = 0; i < mnog2.Count; i++)
+                res.Add(mnog2[i]);
+            res = RemoveDuplicates(res);
+            return res;
+        }
+
+        //дополнить множества
+        public static List<int> ComplementSets(List<int> mnog, int left, int right)
+        {
+            List<int> res = new List<int>();
+            //заполнение листа числами в диапозоне
+            for (int i = left; i <= right; i++)
+            {
+                res.Add(i);
+            }
+            for (int i = 0; i < mnog.Count; i++)
+            {
+                res.Remove(mnog[i]);
+            }
+            return res;
+        }
+
+        //разность множеств
+        public static List<int> SubtractSets(List<int> mnog1, List<int> mnog2)
+        {
+            List<int> res = new List<int>();
+            for (int i = 0; i < mnog1.Count; i++)
+            {
+                res.Add(mnog1[i]);
+            }
+            for (int i = 0; i < mnog2.Count; i++)
+            {
+                res.Remove(mnog2[i]);
+            }
+            return res;
+        }
+
+        //симметрическая разность множеств
+        public static List<int> SubtractSymmetricallySets(List<int> mnog1, List<int> mnog2)
+        {
+            List<int> res = new List<int>();
+            //добавление всех элементов в лист и удаление повторяющихся элементов
+            for (int j = 0; j < mnog1.Count; j++)
+            {
+                int indexElem = res.IndexOf(mnog1[j]);
+                //если такое число уже есть, то удаляем его по индексу 
+                if (indexElem != -1)
+                    res.RemoveAt(indexElem);
+                //если такого числа нет, то добавляем его в конечное множество
+                else
+                    res.Add(mnog1[j]);
+            }
+            for (int j = 0; j < mnog2.Count; j++)
+            {
+                int indexElem = res.IndexOf(mnog2[j]);
+                //если такое число уже есть, то удаляем его по индексу 
+                if (indexElem != -1)
+                    res.RemoveAt(indexElem);
+                //если такого числа нет, то добавляем его в конечное множество
+                else
+                    res.Add(mnog2[j]);
+            }
+            return res;
+        }
+
+        //функция вывода множеств 
+        public static void OutputMnog(int[][] mnog, int numMn)
+        {
+            char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            Console.WriteLine("Ваши множества: ");
+            for (int i = 0; i < numMn; i++)
+            {
+                Console.WriteLine("\n" + alpha[i] + " множество: ");
+                for (int j = 0; j < mnog[i].Length; j++)
+                {
+                    Console.Write(mnog[i][j] + " ");
+                }
+            }
+            Console.Write("\n");
+        }
+
+        //функция вывода результата операции 
+        public static void OutputResult(List<int> res)
+        {
+            Console.WriteLine("\nРезультат выполнения операции над множествами: ");
+            for (int i = 0; i < res.Count; i++)
+            {
+                Console.Write(res[i] + " ");
+            }
+        }
+
+        //функция обработки строки
+        public static List<int> UnidentifiedExpression(int[][] mnog, string input, int left, int right)
+        {
+            List<int> res = new List<int>();
+            List<int> possitions = new List<int>();
+            List<int> A1 = new List<int>();
+            List<int> A2 = new List<int>();
+            List<int> res1 = new List<int>();
+            List<int> B1 = new List<int>();
+
+            input = input.Replace('A', '0');
+            input = input.Replace('B', '1');
+            input = input.Replace('C', '2');
+            input = input.Replace('D', '3');
+            input = input.Replace('E', '4');
+            input = input.Replace('F', '5');
+            input = input.Replace('G', '6');
+
+            int k = 0;
+            input = input + 'b' + 'b' + 'b';
+            string expression = input;
+            if (input[0] != '(' && input[0] != 'd')
+            {
+                for (int j = 0; j < mnog[Int32.Parse(input[0].ToString())].Length; j++)
+                    A1.Add(mnog[Int32.Parse(input[0].ToString())][j]);
+                res = A1;
+            }
+            if (input[0] == 'd')
+            {
+                for (int j = 0; j < mnog[Int32.Parse(input[1].ToString())].Length; j++)
+                    A1.Add(mnog[Int32.Parse(input[1].ToString())][j]);
+                res = ComplementSets(A1, left, right);
+            }
+            try
+            {
+                foreach (var i in input)
+                {
+                    if (i == 'b')
+                        break;
+                    if (i == '(')
+                        possitions.Add(k);
+
+                    if (i == ')')
+                    {
+                        k++;
+                        expression = input.Substring(possitions[possitions.Count - 1], k - possitions[possitions.Count - 1]);
+                        if (A2.Count == 0)
+                        {
+                            for (int x = 0; x < mnog[Int32.Parse(expression[1].ToString())].Length; x++)
+                                A2.Add(mnog[Int32.Parse(expression[1].ToString())][x]);
+                        }
+                        int k1 = 0;
+                        foreach (var j in expression)
+                        {
+                            if (j == '-' || j == '+' || j == '/' || j == 's' || j == 'd')
+                            {
+                                
+                                if (expression[k1 + 2] != ')' && expression[k1 + 2] != 'd')
+                                {
+                                    for (int x = 0; x < mnog[Convert.ToInt32(Int32.Parse(expression[k1 + 2].ToString()))].Length; x++)
+                                        B1.Add(mnog[Int32.Parse(expression[k1 + 2].ToString())][x]);
+                                }
+                                if (j == '-')
+                                    A2 = IntersectSets(A2, B1);
+                                if (j == '+')
+                                    A2 = MergeSets(A2, B1);
+                                if (j == '/')
+                                    A2 = SubtractSets(A2, B1);
+                                if (j == 's')
+                                    A2 = SubtractSymmetricallySets(A2, B1);
+                                if (i == 'd')
+                                {
+                                    B1.Clear();
+                                    for (int x = 0; x < mnog[Int32.Parse(expression[k1 + 1].ToString())].Length; x++)
+                                        B1.Add(mnog[Int32.Parse(expression[k1 + 1].ToString())][x]);
+                                    A2 = ComplementSets(B1, left, right);
+                                }
+                                B1.Clear();
+                            }
+                            k1++;
+                        }
+                        res1 = A2;
+                        if (input[possitions[possitions.Count - 1] - 2] == '-' || input[possitions[possitions.Count - 1] - 2] == '+' ||
+                            input[possitions[possitions.Count - 1] - 2] == '/' || input[possitions[possitions.Count - 1] - 2] == 's' ||
+                            input[possitions[possitions.Count - 1] - 2] == 'd')
+                        {
+                        if (input[possitions[possitions.Count - 1] - 2] == '-')
+                                res = IntersectSets(res, res1);
+                            if (input[possitions[possitions.Count - 1] - 2] == '+')
+                                res = MergeSets(res, res1);
+                            if (input[possitions[possitions.Count - 1] - 2] == '/')
+                                res = SubtractSets(res, res1);
+                            if (input[possitions[possitions.Count - 1] - 2] == 's')
+                                res = SubtractSymmetricallySets(res, res1);
+                            if (input[possitions[possitions.Count - 1] - 2] == 'd')
+                                res = ComplementSets(res1, left, right);
+                        }
+                        possitions.RemoveAt(possitions.Count - 1);
+                        if (input[k + 2] == 'b')
+                        {
+                            A1 = res;
+                            break;
+                        }   
+                        if (input[k + 2] == '-' || input[k + 2] == '+' || input[k + 2] == '/' || input[k + 2] == 's' || input[k + 2] == 'd')
+                            A1 = res;
+                    }
+
+                    if (possitions.Count == 0 && input[k + 2] != '(' && input[k + 2] != 'd')
+                    {
+                        if (i == '-' || i == '+' || i == '/' || i == 's' || i == 'd')
+                        {
+                            if (A1.Count == 0)
+                            {
+                                for (int j = 0; j < mnog[Int32.Parse(expression[0].ToString())].Length; j++)
+                                    A1.Add(mnog[Int32.Parse(expression[0].ToString())][j]);
+                            }
+                            for (int j = 0; j < mnog[Int32.Parse(expression[k + 2].ToString())].Length; j++)
+                                B1.Add(mnog[Int32.Parse(expression[k + 2].ToString())][j]);
+                            if (i == '-')
+                                A1 = IntersectSets(A1, B1);
+                            if (i == '+')
+                                A1 = MergeSets(A1, B1);
+                            if (i == '/')
+                                A1 = SubtractSets(A1, B1);
+                            if (i == 's')
+                                A1 = SubtractSymmetricallySets(A1, B1);
+                            if (i == 'd')
+                            {
+                                B1.Clear();
+                                for (int j = 0; j < mnog[Int32.Parse(expression[k + 1].ToString())].Length; j++)
+                                    B1.Add(mnog[Int32.Parse(expression[k + 1].ToString())][j]);
+                                A1 = ComplementSets(B1, left, right);
+                            }
+                            B1.Clear();
+                        }
+                    }
+                    k++;
+                    res = A1;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Возникли ошибки!");
+            }
+            return res;
+        }
+
+        //------------------------------------------------------------------//
         static void Main(string[] args)
         {
             string[] menu = {
-            "\nСписок команд: \n",
+            "\n\nСписок команд: \n",
             "1. Создать универсум (диапазон)\n",
             "2. Создать множество\n",
-            "3. Пересечение\n",
-            "4. Объединение\n",
-            "5. Дополнение\n",
-            "6. Разность\n",
-            "7. Симметрическая разность\n",
-            "8. Выход из программы\n",
-            "Введите команду: "
+            "3. Ввести строку\n",
+            "4. Выход из программы\n",
             };
             bool stop = false; //переменная отвечающая за остановку программы
-            int left = 0, right = 0, numMn = 1; // границы диапазона и количество множеств
+            int left = 0, right = 0;
+            int numMn = 1; // границы диапазона и количество множеств
             int[][] mnog = new int[numMn][]; //множества
             for (; ; )
             {
@@ -36,20 +313,29 @@ namespace calculator
                 {
                     Console.WriteLine(menu[i]);
                 }
-                int command = Convert.ToInt32(Console.ReadLine());
+                int command = InputInt("Введите команду: ");
+                Console.Write("\n");
                 switch (command)
                 {
                     case 1: //Создание универсума (диапазона)
                         Console.WriteLine(" Введите границы диапозона ");
-                        Console.WriteLine("Введите левую границу: ");
-                        left = Convert.ToInt32(Console.ReadLine());
-                        Console.WriteLine("Введите правую границу: ");
-                        right = Convert.ToInt32(Console.ReadLine());
+                        left = InputInt("Введите левую границу: ");
+                        right = InputInt("Введите правую границу: ");
+                        if  (right <= left)
+                        {
+                            Console.WriteLine("Правая граница должны быть больше левой! Ваша левая граница: " + left);
+                            right = InputInt("Введите правую границу, большую левой границы: ");
+                        }
                         break;
                     case 2: //Создание множеств
-                        Console.WriteLine("Введите количество множеств: ");
-                        numMn = Convert.ToInt32(Console.ReadLine());
+                        if (left == 0 && right == 0)
+                        {
+                            Console.WriteLine("Вы не задали универсум, пожалуйста, задайте универсум (1 команда)");
+                            break;
+                        }
+                        numMn = InputInt("Введите количество множеств: ");
                         mnog = new int[numMn][];
+
                         //цикл перебора всех множеств
                         for (int i = 0; i < numMn; i++)
                         {
@@ -59,20 +345,15 @@ namespace calculator
                             //задание множества перечислением
                             if (method == "перечислением" || method == "2")
                             {
-                                Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
-                                int sizeMn = Convert.ToInt32(Console.ReadLine());
+                                int sizeMn = InputInt("\nВведите размер " + (i + 1) + " множества: ");
                                 mnog[i] = new int[sizeMn];
                                 Console.WriteLine(" \nВведите элементы множества\n ");
                                 for (int j = 0; j < sizeMn; j++)
                                 {
-                                    Console.WriteLine("Введите " + (j + 1) + " элемент: ");
-                                    int number = Convert.ToInt32(Console.ReadLine());
+                                    int number = InputInt("Введите " + (j + 1) + " элемент: ");
                                     //проверка на вхождение в диапазон
                                     while (number < left || number > right)
-                                    {
-                                        Console.WriteLine("Число не входит в диапазон - " + "[" + left + ";" + right + "]" + ". Введите ещё раз: ");
-                                        number = Convert.ToInt32(Console.ReadLine());
-                                    }
+                                        number = InputInt("Число не входит в диапазон - " + "[" + left + ";" + right + "]" + ". Введите ещё раз: ");
                                     mnog[i][j] = number;
                                 }
                             }
@@ -132,8 +413,7 @@ namespace calculator
                                 //задание множества из элементов кратных определенному числу
                                 if (conditions == "3" || conditions == "кратность")
                                 {
-                                    Console.WriteLine("\nВведите какому числу кратны числа в множестве");
-                                    int numberMultiplicity = Convert.ToInt32(Console.ReadLine());
+                                    int numberMultiplicity = InputInt("\nВведите какому числу кратны числа в множестве");
                                     //поиск 1 элемента, удовлетворяющего условию
                                     int elem = left;
                                     while (elem % numberMultiplicity != 0 && elem <= right)
@@ -156,8 +436,7 @@ namespace calculator
                             //заполнение массива случайными числами
                             if (method == "случайно" || method == "3")
                             {
-                                Console.WriteLine("\nВведите размер " + (i + 1) + " множества: ");
-                                int sizeMn = Convert.ToInt32(Console.ReadLine());
+                                int sizeMn = InputInt("\nВведите размер " + (i + 1) + " множества: ");
                                 mnog[i] = new int[sizeMn];
                                 Random rnd = new Random();
                                 byte[] bytes = new byte[100];
@@ -168,224 +447,35 @@ namespace calculator
                                 }
                             }
                         }
-                        //вывод множеств
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i + 1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
+                        OutputMnog(mnog, numMn);
                         break;
-                    case 3: //Пересечение
-                        List<int> list1 = new List<int>();
-                        List<int> res3 = new List<int>();
-                        //сначала сравниваются первые 2 множества и находятся совпадения в них, результат заносится в лист для сравнения
-                        //далее 3 множество сравнивается с листом для сравнения и результаты заносятся в лист для сравнения и так далее
-                        Console.Write("Сколько множеств хотите пересечь: ");
-                        int numIntersection = Convert.ToInt32(Console.ReadLine());
-                        List<int> listNumMn = new List<int>();
-                        for (int i = 0; i < numIntersection; i++)
+                    case 3: //строка
+                        OutputMnog(mnog, numMn);
+                        List<int> res = new List<int>();
+                        Regex regexExpression = new Regex(@"^(d*\(*[A-Z]\s*[-+/s]*\s*d*\(*[A-Z]*\)*\s*(\s*[-+/s]\s*d*\(*[A-Z]\)*\s*)*){1,24}$");
+                        string input = Console.ReadLine();
+                        if (!regexExpression.IsMatch(input))
                         {
-                            Console.WriteLine("Введите номер " + (i + 1) + " множества: ");
-                            int num = Convert.ToInt32(Console.ReadLine());
-                            num--;
-                            listNumMn.Add(num);
+                            System.Console.WriteLine("Выражение задано неверно!");
+                            Console.ReadKey();
+                            break;
                         }
-                        //создание листа для сравнения
-                        for (int k = 0; k < mnog[listNumMn[0]].Length; k++)
+                        else if (regexExpression.IsMatch(input))
                         {
-                            list1.Add(mnog[listNumMn[0]][k]);
+                            res = UnidentifiedExpression(mnog, input, left, right);
                         }
-                        for (int count = 1; count < numIntersection; count++)
-                        {
-                            res3.Clear();
-                            for (int i = 0; i < list1.Count; i++)
-                            {
-                                for (int j = 0; j < mnog[listNumMn[count]].Length; j++)
-                                {
-                                    if (list1[i] == mnog[listNumMn[count]][j])
-                                    {
-                                        res3.Add(mnog[listNumMn[count]][j]);
-                                    }
-                                }
-                            }
-                            res3 = removeDuplicates(res3);
-                            list1 = res3.ToList();
-                        }
-                        //вывод множеств и результата пересечения
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i+1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
-                        Console.WriteLine("\nРезультат выполнения пересечения множеств: ");
-                        for (int i = 0; i < res3.Count; i++)
-                        {
-                            Console.Write(res3[i] + " ");
-                        }
+                        OutputResult(res);
                         break;
-                    case 4: //Объединение
-                        List<int> res4 = new List<int>();
-                        Console.Write("Сколько множеств хотите объединить: ");
-                        int numIntersection2 = Convert.ToInt32(Console.ReadLine());
-                        List<int> listNumMn2 = new List<int>();
-                        for (int i = 0; i < numIntersection2; i++)
-                        {
-                            Console.WriteLine("Введите номер " + (i + 1) + " множества: ");
-                            int num = Convert.ToInt32(Console.ReadLine());
-                            num--;
-                            listNumMn2.Add(num);
-                        }
-                        //добавление всех элементов в лист
-                        for (int i = 0; i < numIntersection2; i++)
-                        {
-                            for (int j = 0; j < mnog[listNumMn2[i]].Length; j++)
-                            {
-                                res4.Add(mnog[listNumMn2[i]][j]);
-                            }
-                        }
-                        res4 = removeDuplicates(res4);
-                        //вывод множеств и результата объединения
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i + 1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
-                        Console.WriteLine("\nРезультат выполнения объединения множеств: ");
-                        for (int i = 0; i < res4.Count; i++)
-                        {
-                            Console.Write(res4[i] + " ");
-                        }
-                        break;
-                    case 5: //Дополнение
-                        //вывод множеств
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i + 1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
-                        Console.WriteLine("\nВведите какое множество будем дополнять: ");
-                        int numAddition = Convert.ToInt32(Console.ReadLine());
-                        List<int> res5 = new List<int>();
-                        //заполнение листа числами в диапозоне
-                        for (int i = left; i <= right; i++)
-                        {
-                            res5.Add(i);
-                        }
-                        for(int i = 0; i < mnog[numAddition - 1].Length; i++)
-                        {
-                            res5.Remove(mnog[numAddition - 1][i]);
-                        }
-                        //вывод результата дополнения
-                        Console.WriteLine("\nРезультат выполнения дополнения множества: ");
-                        for (int i = 0; i < res5.Count; i++)
-                        {
-                            Console.Write(res5[i] + " ");
-                        }
-                        break;
-                    case 6: //Разность
-                        //вывод множеств
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i + 1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
-                        Console.WriteLine("\nВведите из какого множества будем вычитать: ");
-                        int numDeductible = Convert.ToInt32(Console.ReadLine());
-                        Console.WriteLine("\nВведите множество-вычитатель: ");
-                        int numSubtractor = Convert.ToInt32(Console.ReadLine());
-                        List<int> res6 = new List<int>();
-                        for (int i = 0; i < mnog[numDeductible - 1].Length; i++)
-                        {
-                            res6.Add(mnog[numDeductible - 1][i]);
-                        }
-                        for (int i = 0; i < mnog[numSubtractor - 1].Length; i++)
-                        {
-                            res6.Remove(mnog[numSubtractor - 1][i]);
-                        }
-                        //вывод результата разности
-                        Console.WriteLine("\nРезультат выполнения разности множеств: ");
-                        for (int i = 0; i < res6.Count; i++)
-                        {
-                            Console.Write(res6[i] + " ");
-                        }
-                        break;
-                    case 7: //Симметрическая разность
-                        //вывод множеств
-                        Console.WriteLine("Ваши множества: ");
-                        for (int i = 0; i < numMn; i++)
-                        {
-                            Console.WriteLine("\n" + (i + 1) + " множество: ");
-                            for (int j = 0; j < mnog[i].Length; j++)
-                            {
-                                Console.Write(mnog[i][j] + " ");
-                            }
-                        }
-                        Console.WriteLine("\nВведите 2 множества для симметрической разности\n");
-                        Console.WriteLine("\nВведите номер 1 множества для симметрической разности: ");
-                        int num1Mn = Convert.ToInt32(Console.ReadLine());
-                        Console.WriteLine("\nВведите номер 2 множества для симметрической разности: ");
-                        int num2Mn = Convert.ToInt32(Console.ReadLine());
-                        List<int> res7 = new List<int>();
-                        //добавление всех элементов в лист и удаление повторяющихся элементов
-                        for (int j = 0; j < mnog[num1Mn - 1].Length; j++)
-                        {
-                            int indexElem = res7.IndexOf(mnog[num1Mn - 1][j]);
-                            //если такое число уже есть, то удаляем его по индексу 
-                            if (indexElem != -1)
-                                res7.RemoveAt(indexElem);
-                            //если такого числа нет, то добавляем его в конечное множество
-                            else
-                                res7.Add(mnog[num1Mn - 1][j]);
-                        }
-                        for (int j = 0; j < mnog[num2Mn - 1].Length; j++)
-                        {
-                            int indexElem = res7.IndexOf(mnog[num2Mn - 1][j]);
-                            //если такое число уже есть, то удаляем его по индексу 
-                            if (indexElem != -1)
-                                res7.RemoveAt(indexElem);
-                            //если такого числа нет, то добавляем его в конечное множество
-                            else
-                                res7.Add(mnog[num2Mn - 1][j]);
-                        }
-                        //вывод результата симметрической разности
-                        Console.WriteLine("\nРезультат выполнения симметрической разности множеств: ");
-                        for (int i = 0; i < res7.Count; i++)
-                        {
-                            Console.Write(res7[i] + " ");
-                        }
-                        break;
-                    case 8: //Выход из программы
+                    case 4: //Выход из программы
                         stop = true;
                         break;
                     default:
                         Console.Write("Неправильно введена команда!");
                         break;
                 }
-                //Если была введена команда 8, то цикл прервется
+                //Если была введена команда 4, то цикл прервется
                 if (stop)
-                {
                     break;
-                }
             }
         }
     }
