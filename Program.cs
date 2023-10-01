@@ -287,7 +287,7 @@ namespace calculator
             }
             catch
             {
-                Console.WriteLine("Возникли ошибки!");
+                Console.WriteLine("_");
             }
             return res;
         }
@@ -437,15 +437,28 @@ namespace calculator
                             if (method == "случайно" || method == "3")
                             {
                                 int sizeMn = InputInt("\nВведите размер " + (i + 1) + " множества: ");
+                                while (sizeMn > (right - left))
+                                {
+                                    Console.WriteLine("Множество не может быть создано (размер больше " + (right - left) + " )");
+                                    sizeMn = InputInt("\nВведите размер " + (i + 1) + " множества: ");
+                                }
                                 mnog[i] = new int[sizeMn];
-                                Random rnd = new Random();
-                                byte[] bytes = new byte[100];
+                                Random random = new Random();
                                 for (int j = 0; j < sizeMn; j++)
                                 {
-                                    rnd.NextBytes(bytes);
-                                    mnog[i][j] = rnd.Next(left, right);
+                                    var num = random.Next(left, right);
+
+                                    if (mnog[i].Contains(num))
+                                    {
+                                        j--;
+                                    }
+                                    else
+                                    {
+                                        mnog[i][j] = num;
+                                    }
                                 }
                             }
+                            Array.Sort(mnog[i]);
                         }
                         OutputMnog(mnog, numMn);
                         break;
