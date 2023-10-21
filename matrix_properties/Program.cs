@@ -20,11 +20,10 @@ namespace matrix_properties
             if (a == columns)
                 Console.WriteLine("Рефлексивность");
             if (b == columns)
-                Console.WriteLine("антирефлексивность");
+                Console.WriteLine("Антирефлексивность");
         }
         // Функция для проверки симметрии
         static void IsSymmetric(int[,] matrix, int columns, int b)
-        // Функция для проверки транзитивности
         {
             int a = 0;
             for (int i = 0; i < columns; i++)
@@ -33,8 +32,7 @@ namespace matrix_properties
                 {
                     if (matrix[i, j] != matrix[j, i])
                     {
-                        a = 1;
-                        break;
+                        a++;
                     }
                 }
                 if (a == 1)
@@ -45,9 +43,10 @@ namespace matrix_properties
                     Console.WriteLine("Асимметричность");
                 else
                     Console.WriteLine("Симметричность");
-            else
+            if (a >= columns * columns - columns - 1)
                 Console.WriteLine("Антисимметричность");
         }
+        //функция для проверки транзитивности
         static bool IsTransitive(int[,] matrix)
         {
             int n = matrix.GetLength(0);
@@ -87,7 +86,7 @@ namespace matrix_properties
         static void Main(string[] args)
         {
 
-            string path = @"C:\Users\trajt\source\repos\matrix_properties\My_text.txt";
+            string path = @"C:\Users\trajt\source\repos\Discrete-mathematics-2-course\matrix_properties\My_text.txt";
             if (!File.Exists(path))
             {
                 // Создание файла
@@ -128,7 +127,6 @@ namespace matrix_properties
                         arr[i, j] = (int)Char.GetNumericValue(matrix[a]);
                         a += 2;
                     }
-                    
                 }
                 //вывод свойств матрицы
                 IsReflex(matrix, columns, b);
