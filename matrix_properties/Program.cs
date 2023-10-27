@@ -26,6 +26,7 @@ namespace matrix_properties
         static void IsSymmetric(int[,] matrix, int columns, int b)
         {
             int a = 0;
+            bool isAntis = false;
             for (int i = 0; i < columns; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -34,17 +35,21 @@ namespace matrix_properties
                     {
                         a++;
                     }
+                    if (matrix[i, j] == 1 && matrix[j, i] != 0)
+                        isAntis = true;
                 }
                 if (a == 1)
                     break;
             }
             if (a == 0)
-                if (b == columns)
-                    Console.WriteLine("Асимметричность");
-                else
+            {
+                if (b != columns)
                     Console.WriteLine("Симметричность");
-            if (a >= columns * columns - columns - 1)
+            }
+            if (isAntis)
                 Console.WriteLine("Антисимметричность");
+            if (a >= columns * columns - columns - 1)
+                Console.WriteLine("Асимметричность");
         }
         //функция для проверки транзитивности
         static bool IsTransitive(int[,] matrix)
@@ -86,7 +91,7 @@ namespace matrix_properties
         static void Main(string[] args)
         {
 
-            string path = @"C:\Users\trajt\source\repos\Discrete-mathematics-2-course\matrix_properties\My_text.txt";
+            string path = @"C:\Users\trajt\source\repos\Discrete-mathematics-2-course\matrix_properties\m3.txt";
             if (!File.Exists(path))
             {
                 // Создание файла
