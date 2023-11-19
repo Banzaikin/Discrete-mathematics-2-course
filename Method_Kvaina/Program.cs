@@ -6,10 +6,19 @@ namespace Method_Kvaina
 {
     class Program
     {
-        static void TableTrue (string s)
+        static string TF(int value)
         {
+            if (value == 1)
+                return "";
+            else
+                return "!";
+        }
+        static string CreateSDNF (string s)
+        {
+            string sdnf = "";
             Console.WriteLine("Таблица истинности: ");
             int count = 0;
+            int size_sdnf = 0;
             Console.WriteLine("x y z d f");
             for (int x = 0; x < 2; x++)
             {
@@ -20,16 +29,17 @@ namespace Method_Kvaina
                         for (int d = 0; d < 2; d++)
                         {
                             for (int i = 0; i < 1; i++)
-                            {
                                 Console.Write(x + " " + y + " " + z + " " + d + " " + s[count]);
-                            }
+                            if (s[count] == '1')
+                                sdnf = string.Concat(sdnf, TF(x) + "x" + TF(y) + "y" + TF(z) + "z" + TF(d) + "d U ");  
                             Console.Write("\n");
                             count++;
                         }
-                        
                     }
                 }
             }
+            
+            return sdnf;
         }
         static int[,] CreateCartCarno (string vec, int size)
         {
@@ -94,7 +104,38 @@ namespace Method_Kvaina
                 int size = (int)(Math.Sqrt(s.Length));
                 int[,] arr = new int[size, size];
                 arr = CreateCartCarno(s, size);
-                TableTrue(s);
+                string sdnf = CreateSDNF(s);
+                //узнаем кол-во элементов в СДНФ
+                int size_sdnf = 0;
+                for (int i = 0; i < sdnf.Length; i++)
+                {
+                    if (sdnf[i] == 'U')
+                        size_sdnf++;
+                }
+                //проверка на пустую функцию
+                if (size_sdnf == 0)
+                {
+                    Console.WriteLine("Функция пустая!");
+                    return;
+                }
+                //создание массива элементов СДНФ
+                string[] arr_sdnf = new string[size_sdnf];
+                int a = 0;
+                int count_arr = 0;
+                for (int i = 0; i < sdnf.Length; i++)
+                {
+                    if (sdnf[i] == 'U')
+                    {
+                        arr_sdnf[a] = sdnf.Substring(count_arr, i - count_arr);
+                        Console.WriteLine(arr_sdnf[a]);
+                        count_arr = i + 2;
+                        a++;
+                    }
+                }
+                sdnf = sdnf.Remove(sdnf.Length - 2, 1);
+                Console.WriteLine("\nСДНФ: ");
+                Console.WriteLine(sdnf);
+                
             }
 
         }
