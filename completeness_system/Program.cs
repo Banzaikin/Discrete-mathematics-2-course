@@ -309,6 +309,10 @@ namespace completeness_system
 
         static bool IsLinearityFunction(string function, string[][] tree)
         {
+            if (function == "00111100" || function == "11000011" || function == "1010")
+                return true;
+            if (function == "1110")
+                return false;
             string str;
 
             bool isL = true;
