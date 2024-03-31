@@ -86,7 +86,7 @@ namespace ConnectionComponents
 
         static void Main(string[] args)
         {
-            string path = @"C:\Users\bayan\source\repos\Discrete-mathematics-2-course\ConnectionComponents\g11.txt";
+            string path = @"C:\Users\bayan\source\repos\Discrete-mathematics-2-course\ConnectionComponents\g14.txt";
             if (!File.Exists(path))
             {
                 // Создание файла
