@@ -62,7 +62,7 @@ public class RecognizingAutomaton
         {
             state = Transition(state, letter);
             Console.WriteLine($"Letter: {letter}; State: {state}");
-
+            
             if (state == States.Final)
                 break;
         }
